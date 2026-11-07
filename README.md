@@ -30,10 +30,11 @@ Repository layout:
 - tests: numerical smoke test.
 - configs: frozen paper protocol.
 - results: compact result summaries.
+- reproduction: MATLAB R2019a scripts for the added analyses and visualizations.
 - paper: LaTeX source, PDF and PNG figures.
 - docs: data and reproduction instructions.
 
-The exact benchmark MAT files used in the paper are included under data. See docs/DATASETS.md and data/DATA_MANIFEST.csv.
+The exact benchmark MAT files used in the paper are included under data. See docs/DATASETS.md and data/DATA_MANIFEST.csv. Preregistered analysis records are under docs.
 
 The code was developed for MATLAB R2019a on Windows. No GPU or Parallel Computing Toolbox is required.
 

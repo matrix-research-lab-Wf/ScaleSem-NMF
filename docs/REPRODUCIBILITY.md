@@ -20,4 +20,6 @@ Paper protocol:
 
 Dataset-level p and k are in configs/paper_protocol.m.
 
-HLPNMF, GOCNMF and SNMFWLP remain third-party code. Their native graph construction, optimization, stopping and decision mechanisms must be preserved. Large model states, raw datasets and third-party implementations are excluded from this repository.
+The scripts under reproduction regenerate the label-noise analysis, radial-mechanism diagnostic, semantic-matrix visualization, and four-method t-SNE analysis from the frozen protocol and saved outputs.
+
+HLPNMF, GOCNMF and SNMFWLP remain third-party code. Their native graph construction, optimization, stopping and decision mechanisms must be preserved. Large model states and third-party implementations are excluded from this repository.

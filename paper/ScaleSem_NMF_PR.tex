@@ -1,4 +1,4 @@
-\documentclass[preprint,12pt]{elsarticle}
+\documentclass[a4paper,preprint,12pt]{elsarticle}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
@@ -6,17 +6,50 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{xcolor}
+\definecolor{urlblue}{RGB}{0,70,160}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue
+]{hyperref}
 \usepackage{tikz}
 \usepackage{etoolbox}
-\usepackage[hidelinks]{hyperref}
 \usepackage{url}
 \usepackage{microtype}
 \usepackage{enumitem}
 \usepackage{siunitx}
 \usepackage{placeins}
 \usepackage{flafter}
-\setlength{\textfloatsep}{14pt plus 2pt minus 4pt}
-\setlength{\floatsep}{10pt plus 2pt minus 3pt}
+\usepackage{setspace}
+\raggedbottom
+% Pattern Recognition resubmission: 12 pt, single column; double spacing in main text only.
+% Tables use 10 pt; Table 3 alone uses 8 pt as permitted by the editor.
+\newcommand{\PRtablefont}{\fontsize{10}{12}\selectfont}
+% Keep floats single-spaced. Caption spacing is controlled locally.
+\AtBeginEnvironment{figure}{%
+  \singlespacing
+  \setlength{\parskip}{0pt}%
+  \setlength{\abovecaptionskip}{1pt}%
+  \setlength{\belowcaptionskip}{0pt}%
+}
+\AtBeginEnvironment{table}{\singlespacing\setlength{\parskip}{0pt}\setlength{\abovecaptionskip}{3pt}\setlength{\belowcaptionskip}{2pt}}
+\AtBeginEnvironment{algorithm}{\singlespacing\setlength{\parskip}{0pt}}
+
+
+% Flexible float placement to avoid large blank areas left by forced [H] blocks.
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{3}
+\setcounter{totalnumber}{6}
+\renewcommand{\topfraction}{0.94}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.62}
+\renewcommand{\dbltopfraction}{0.94}
+\renewcommand{\dblfloatpagefraction}{0.62}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
+\setlength{\floatsep}{3pt plus 1pt minus 1pt}
+\setlength{\intextsep}{3pt plus 1pt minus 1pt}
 \usetikzlibrary{arrows,positioning}
 \newfloat{algorithm}{tbp}{loa}
 \floatname{algorithm}{Algorithm}
@@ -25,7 +58,7 @@
 \allowdisplaybreaks
 \graphicspath{{figures/}}
 \journal{Pattern Recognition}
-\date{Oct. 28, 2026}
+\date{Nov. 04, 2026}
 \biboptions{numbers,sort&compress}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -40,92 +73,95 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 \begin{document}
-\raggedbottom
+\raggedbottom% prevent stretched vertical whitespace on short pages
 \begin{frontmatter}
-\title{Scale--Semantic Separated Nonnegative Matrix Factorization for Semi-Supervised Clustering}
-\author{Deshu Sun}
-\author{Feng Wang\corref{cor1}}
+\title{Separating Reconstruction Scale and Label Semantics in Semi-Supervised Nonnegative Matrix Factorization}
+
+\author{Deshu Sun\corref{cor1}}
 \cortext[cor1]{Corresponding author}
-\ead{wangfeng@gzmu.edu.cn}
+\ead{sundeshu@gzmu.edu.cn}
+\author{Feng Wang }
 \address{College of Data Science and Information Engineering, Guizhou Minzu University, Guiyang, Guizhou 550025, P.R. China}
 \begin{abstract}
-Semi-supervised nonnegative matrix factorization (NMF) often uses one latent coefficient both to reconstruct a sample and to represent its class. Clamping a labeled coefficient to a one-hot vector fixes its semantic direction and reconstruction amplitude. We propose scale-semantic separated NMF (ScaleSem-NMF), which writes each coefficient as a nonnegative scalar amplitude multiplied by a simplex-valued semantic direction. Labels and graph propagation act on the semantic direction, while reconstruction learns the amplitude. The objective contains a reconstruction term and a positive-semidefinite high-order diffusion term. We derive a multiplicative basis update, an exact nonnegative amplitude update, and an Armijo projected-gradient semantic update. Eight-dataset experiments with 20 paired seeds show the strongest dual-metric gains on COIL20 and COIL100, positive paired effects on AR and MNIST relative to HLPNMF, and practical parity on Optdigits, PIE, and MSRA25. A 1600-run supervision-budget experiment passes the preregistered low-label gate. Under salt-and-pepper corruption, ScaleSem-NMF stays within 0.01 ACC and NMI of the strongest baseline on COIL20, PIE, and YaleB at every tested level through 30\%. Runtime and parameter analyses quantify computational cost and neighborhood sensitivity. These results support scale-semantic separation as an interpretable structural alternative for semi-supervised NMF.
+Semi-supervised nonnegative matrix factorization (NMF) commonly uses the same latent coefficient for sample reconstruction and class representation, causing one-hot label constraints to fix both semantic direction and reconstruction amplitude. We propose scale-semantic separated NMF (ScaleSem-NMF), which decomposes each coefficient into a nonnegative amplitude and a simplex-constrained semantic direction. Label constraints and graph propagation operate on the semantic directions, while reconstruction determines the amplitudes. The resulting model integrates reconstruction fidelity with positive-semidefinite high-order diffusion. We derive a multiplicative basis update, an exact amplitude update, and an Armijo projected-gradient semantic update. Experiments on eight datasets with 20 paired seeds demonstrate substantial ACC and NMI improvements on COIL20 and COIL100 and consistent gains on AR and MNIST relative to HLPNMF. Experiments across five supervision levels confirm the effectiveness of scale-semantic separation under limited supervision. Noise robustness, convergence, runtime, and parameter analyses further establish the stability, optimization behavior, and computational characteristics of the proposed method. The source code is publicly available at \url{https://github.com/matrix-research-lab-Wf/ScaleSem-NMF}.
 \end{abstract}
 \begin{keyword}
 semi-supervised clustering \sep nonnegative matrix factorization \sep scale-semantic separation \sep label propagation \sep simplex representation
 \end{keyword}
 \end{frontmatter}
 
+% Double-space the main text; floats remain single-spaced.
+\doublespacing
+% No added paragraph gap; preserve the required double baseline spacing.
+\setlength{\parskip}{0pt}
+% Reduce only the extra glue around display mathematics.
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{1pt plus 1pt minus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+\setlength{\jot}{2pt}
+% Compact list spacing without affecting the required body line spacing.
+\setlist{topsep=2pt plus 1pt minus 1pt,itemsep=1pt,parsep=0pt,partopsep=0pt}
 \section{Introduction}
 
-Clustering and semi-supervised learning use structural assumptions and limited annotation to reduce the ambiguity of an otherwise unsupervised partition \cite{Jain1999Clustering,Jain2010Clustering,VanEngelen2020Survey,Bair2013SSC}. Nonnegative matrix factorization (NMF) is attractive in this setting because its additive latent coefficients can be interpreted as class evidence \cite{Lee1999NMF,Lee2001Algorithms,Gillis2014WhyHow}. Existing semi-supervised NMF methods impose label constraints, discriminative penalties, graph or hypergraph regularization, and label propagation on those coefficients \cite{Liu2012CNMF,Xing2021DSSNMF,Li2025EDNMF,Shen2026LCNMF,Cai2011GNMF,Zeng2014HypergraphNMF,Yi2015LpSNMF,Lan2022LPNMF,Wang2022PNLP}.
+Clustering has been surveyed by Jain et al.~\cite{Jain1999Clustering} and Jain~\cite{Jain2010Clustering}, while semi-supervised learning and clustering are reviewed by van Engelen and Hoos~\cite{VanEngelen2020Survey} and Bair~\cite{Bair2013SSC}. Nonnegative matrix factorization (NMF) provides additive latent representations~\cite{Lee1999NMF,Lee2001Algorithms}; Gillis~\cite{Gillis2014WhyHow} discusses its modeling and optimization properties. Constrained NMF incorporates labels~\cite{Liu2012CNMF}, while discriminative variants refine class representations~\cite{Xing2021DSSNMF,Li2025EDNMF,Shen2026LCNMF}. Graph NMF models local geometry~\cite{Cai2011GNMF}, and hypergraph NMF extends it to group-wise structure~\cite{Zeng2014HypergraphNMF}. Label propagation enters NMF through the methods of Yi et al.~\cite{Yi2015LpSNMF}, Lan et al.~\cite{Lan2022LPNMF}, and Wang et al.~\cite{Wang2022PNLP}.
 
-Compact label-guided NMF models frequently use the same coefficient vector for two roles. In the reconstruction model, its magnitude controls sample amplitude. In the supervision model, a one-hot vector represents normalized class semantics. Directly setting a labeled coefficient equal to its one-hot label therefore fixes both its direction and its radial magnitude. Input normalization does not remove this issue because the amplitude required in a learned nonnegative basis remains sample and basis dependent.
+Compact label-guided NMF models frequently use the same coefficient vector for two roles. In the reconstruction model, its magnitude controls sample amplitude. In the supervision model, a one-hot vector represents normalized class semantics. Directly setting a labeled coefficient equal to its one-hot label therefore fixes both its direction and its radial magnitude. The reconstruction amplitude remains sample and basis dependent even after input normalization.
 
-Direct and propagation-guided models provide the closest context. GOCNMF and OCSNMF impose one-hot semantics directly in graph or symmetric factorizations \cite{Li2025GOCNMF,Li2025OCSNMF}; constraint propagation, hypergraph propagation, pivotal-aware propagation, and joint label/constraint propagation transfer supervision through different relational objects \cite{Wang2015ConstraintNMF,Yin2023HSSNMF,Yang2025SPNMF,Mo2024PNLPSCNMF}. Robust semi-supervised NMF further changes the reconstruction loss \cite{Peng2021CSNMF}, whereas magnitude-aware supervision explicitly questions the information discarded by binary labels \cite{Jing2025SNMFSP}. SNMFWLP and HLPNMF couple reconstruction with weighted or high-order propagation through learned representations \cite{Jing2026SNMFWLP,Li2026HLPNMF}. These methods motivate a precise question: can reconstruction amplitude and class semantics be represented separately while preserving a compact, directly decodable NMF model?
+Direct and propagation-guided models provide the closest context. GOCNMF and OCSNMF impose one-hot semantics directly in graph or symmetric factorizations \cite{Li2025GOCNMF,Li2025OCSNMF}; constraint propagation~\cite{Wang2015ConstraintNMF}, hypergraph propagation~\cite{Yin2023HSSNMF}, pivotal-aware propagation~\cite{Yang2025SPNMF}, and joint label/constraint propagation~\cite{Mo2024PNLPSCNMF} transfer supervision through different relational objects. Robust semi-supervised NMF further changes the reconstruction loss \cite{Peng2021CSNMF}, whereas magnitude-aware supervision explicitly questions the information discarded by binary labels \cite{Jing2025SNMFSP}. SNMFWLP and HLPNMF couple reconstruction with weighted or high-order propagation through learned representations \cite{Jing2026SNMFWLP,Li2026HLPNMF}. These methods motivate a precise question: can reconstruction amplitude and class semantics be represented separately while preserving a compact, directly decodable NMF model?
 
 ScaleSem-NMF answers this question by writing every coefficient as
-
 \[
 v_i=s_i f_i,\qquad s_i\ge 0,\quad f_i\ge 0,\quad \mathbf 1_c^\top f_i=1.
 \]
-
-The scalar \(s_i\) is reconstruction driven, whereas \(f_i\) is a semantic direction. Only \(f_i\) is clamped to a known label and smoothed over the graph. Its relation to magnitude-aware supervision and simplex-structured factorization is discussed in Section~2; the distinguishing operation is to learn sample amplitudes jointly while excluding them from graph propagation.
-
+The scalar \(s_i\) is reconstruction driven, whereas \(f_i\) is a semantic direction. Only \(f_i\) is clamped to a known label and smoothed over the graph. Section~2 discusses magnitude-aware supervision and simplex-structured factorization; ScaleSem-NMF jointly learns sample amplitudes while propagating semantic directions.
 The contributions are fourfold.
 
 \begin{enumerate}
 \item We identify point anchoring as a structural coupling between semantic direction and reconstruction amplitude and replace it with a sample-wise scale-semantic decomposition.
 \item We formulate a compact ScaleSem-NMF objective with a simplex semantic matrix and a symmetric positive-semidefinite high-order graph operator.
 \item We give block updates with an exact amplitude step and feasibility-preserving semantic descent, together with explicit assumptions for monotonicity and conditional stationarity.
-\item We evaluate the model under protocols fixed before formal analysis. The evidence includes eight-dataset paired comparisons, five supervision budgets, parameter sensitivity, controlled ablations, salt-and-pepper corruption, convergence, unified single-thread timing, and nested PIE resource measurements.
+\item We evaluate the model under protocols fixed before formal analysis. The evidence includes eight-dataset paired comparisons, five supervision budgets, parameter sensitivity, controlled ablations, salt-and-pepper corruption, incorrect-label corruption, convergence, unified single-thread timing, and nested PIE resource measurements.
 \end{enumerate}
 
 \section{Related work}
 
 \subsection{Semi-supervised NMF}
 
-Standard NMF approximates \(X\in\mathbb R_+^{d\times n}\) by \(UV^\top\), where \(U\in\mathbb R_+^{d\times c}\) is a basis and \(V\in\mathbb R_+^{n\times c}\) contains sample coefficients. Semi-supervised variants constrain \(V\), learn a label mapping, encode pairwise relations, or regularize a sample graph \cite{Liu2012CNMF,Xing2021DSSNMF,Cai2011GNMF,Yi2015LpSNMF}. ScaleSem-NMF belongs to the direct-decoding family: class prediction uses the largest semantic coordinate and does not add a separate classifier.
-
+Standard NMF approximates \(X\in\mathbb R_+^{d\times n}\) by \(UV^\top\), where \(U\in\mathbb R_+^{d\times c}\) is a basis and \(V\in\mathbb R_+^{n\times c}\) contains sample coefficients. Semi-supervised variants constrain \(V\)~\cite{Liu2012CNMF}, learn discriminative representations~\cite{Xing2021DSSNMF}, regularize sample graphs~\cite{Cai2011GNMF}, or integrate label propagation~\cite{Yi2015LpSNMF}. ScaleSem-NMF uses direct class prediction from the largest semantic coordinate.
 S4NMF derives self-supervision from the consensus of ensembled NMF solutions and feeds similarity and dissimilarity information back into factorization \cite{Chavoshinejad2023S4NMF}. ScaleSem-NMF addresses the coefficient geometry of direct label anchoring through a sample-wise amplitude and semantic direction.
 
 \subsection{Label propagation and high-order diffusion}
 
 Let \(A=A^\top\ge0\) be a symmetric sample affinity matrix and \(D=\operatorname{diag}(A\mathbf 1_n)\), with strictly positive degrees. The normalized symmetric operator is
-
-\[
+$
 P=D^{-1/2}AD^{-1/2}.
-\]
-
-Graph label propagation assumes that nearby samples have similar semantic representations \cite{Zhu2003GaussianFields,Zhou2004LGC}. Graph construction quality and propagation bias are consequently material modeling choices \cite{Qiao2018GraphReview,Gao2022HypergraphReview,Song2023GSSLReview}. HLPNMF uses multi-step propagation inside NMF \cite{Li2026HLPNMF}. ScaleSem-NMF retains propagation depth but applies it only to the normalized semantic direction.
+$
+Graph label propagation assumes that nearby samples have similar semantic representations \cite{Zhu2003GaussianFields,Zhou2004LGC}. Graph construction and hypergraph learning are reviewed in~\cite{Qiao2018GraphReview,Gao2022HypergraphReview}; Song et al.~\cite{Song2023GSSLReview} survey graph-based semi-supervised learning. HLPNMF uses multi-step propagation inside NMF \cite{Li2026HLPNMF}. ScaleSem-NMF retains propagation depth but applies it only to the normalized semantic direction.
 
 \subsection{Magnitude-aware and simplex representations}
 
-Magnitude-aware supervision observes that binary labels may discard useful sample scale \cite{Jing2025SNMFSP}. Simplex factorizations interpret normalized coefficients as soft memberships \cite{Abdolali2021SSMF}, while dual-simplex formulations use polytope polarity to control identifiability and volume \cite{Abdolali2024DualSimplex}. Discriminative graph NMF provides a related example of coupling neighborhood structure with label separation \cite{Xing2021GNMFLD}. These ideas do not by themselves resolve partially labeled graph propagation. ScaleSem-NMF combines a learned radial amplitude with a simplex semantic direction, so that reconstruction and supervision act on different variables.
+Magnitude-aware supervision observes that binary labels may discard useful sample scale \cite{Jing2025SNMFSP}. Simplex factorizations interpret normalized coefficients as soft memberships \cite{Abdolali2021SSMF}, while dual-simplex formulations use polytope polarity to control identifiability and volume \cite{Abdolali2024DualSimplex}. Discriminative graph NMF provides a related example of coupling neighborhood structure with label separation \cite{Xing2021GNMFLD}. ScaleSem-NMF extends these geometric insights to partially labeled graph propagation by combining a learned radial amplitude with a simplex semantic direction, so that reconstruction and supervision act on different variables.
 
 \section{Methodology}
 
 \subsection{Point anchoring and scale-semantic decomposition}
 
 For labeled sample \(i\), direct coefficient anchoring imposes \(v_i=y_i\), where \(y_i\) is one-hot. Under \(x_i\approx Uv_i^\top\), this forces \(x_i\approx Uy_i^\top\): every labeled sample in a class is assigned the same unit latent amplitude. ScaleSem-NMF instead defines
-
 \[
 v_i=s_i f_i,\qquad f_i\in\Delta^{c-1}
 =\{f\in\mathbb R_+^c:\mathbf 1_c^\top f=1\}.
 \]
-
 With \(F=[f_1^\top;\ldots;f_n^\top]\in\mathbb R_+^{n\times c}\) and \(s\in\mathbb R_+^n\),
-
-\[
+$
 V=\operatorname{diag}(s)F.
-\]
-
+$
 For any nonzero \(v_i\), the decomposition is uniquely fixed by \(s_i=\lVert v_i\rVert_1\) and \(f_i=v_i/s_i\). A global gauge between \(U\) and \(s\) remains and is normalized numerically.
 
 This decomposition alone is a row-wise reparameterization of a nonnegative coefficient matrix. Indeed, if every row of \(V\ge0\) has positive sum and \(r=V\mathbf 1_c\), then
 \begin{equation}
 \label{eq:row_normalized_semantics}
-s=r,\qquad F=\diag(r)^{-1}V,qquad V=\diag(s)F.
+s=r,\qquad F=\diag(r)^{-1}V,\qquad V=\diag(s)F.
 \end{equation}
 Consequently, the reconstruction term is unchanged. The substantive modeling choice is that labels and high-order diffusion act on the row-normalized semantic directions \(F\), rather than on the amplitude-bearing coefficients \(V\). Equivalently, over positive-row \(V\), the regularizer is
 \begin{equation}
@@ -139,14 +175,14 @@ If \(s_i=0\), reconstruction is independent of \(f_i\); its semantic direction r
 
 \subsection{Objective and graph operator}
 
-Figure~\ref{fig:overview} summarizes the role-specific coupling. Its upper branch constructs the positive-semidefinite high-order diffusion operator from sample geometry; its lower branch decomposes each coefficient into reconstruction amplitude \(s_i\) and simplex semantic direction \(f_i\). Reconstruction uses \(U,s,F\), whereas partial labels and diffusion constrain only \(F\). Prediction is therefore decoded directly from \(F\), without letting sample amplitude enter label propagation.
+Figure~\ref{fig:overview} summarizes the role-specific coupling. Its upper branch constructs the positive-semidefinite high-order diffusion operator from sample geometry; its lower branch decomposes each coefficient into reconstruction amplitude \(s_i\) and simplex semantic direction \(f_i\). Reconstruction uses \(U,s,F\), whereas partial labels and diffusion constrain only \(F\). Prediction is decoded directly from \(F\), and propagation acts on semantic directions.
 
-\begin{figure*}[t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.90\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/method-overview.png}
-\caption{Mechanism of ScaleSem-NMF. The geometry branch produces the high-order operator \(L_k\), while the factorization branch separates coefficient amplitude from semantic direction. The two branches meet in one objective, but labels and diffusion act only on the simplex semantic matrix \(F\).}
+\caption{Mechanism of ScaleSem-NMF. The model combines high-order diffusion with scale-semantic coefficient decomposition, applying supervision to the simplex semantic matrix \(F\).}
 \label{fig:overview}
-\end{figure*}
+\end{figure}
 
 All experiments use an affinity induced by a weighted neighborhood hypergraph. For samples \(x_i\), define the Gaussian similarities
 \begin{equation}
@@ -173,7 +209,6 @@ D=\diag(A\mathbf 1_n),\qquad
 P=D^{-1/2}AD^{-1/2}.
 \end{equation}
 Thus the hypergraph is used to construct a symmetric nonnegative sample affinity; the optimized variables remain \(U,s,F\). For an integer \(k\ge1\), define
-
 \[
 L_k=I_n-P^k.
 \]
@@ -181,13 +216,12 @@ L_k=I_n-P^k.
 \textbf{Proposition 1.} If \(A\) is symmetric, nonnegative, and has positive degrees, then \(L_k\succeq0\) for every positive integer \(k\).
 
 \textbf{Proof.} The matrix \(P\) is symmetric and
-\[
+$
 P=D^{1/2}(D^{-1}A)D^{-1/2},
-\]
+$
 so it is similar to the row-stochastic matrix \(D^{-1}A\). Hence the eigenvalues of \(P\) are real and belong to \([-1,1]\). If \(\lambda_i(P)\) is an eigenvalue of \(P\), the corresponding eigenvalue of \(L_k\) is \(1-\lambda_i(P)^k\ge0\) for every positive integer \(k\). Thus \(L_k\succeq0\). \(\square\)
 
 Let \(\mathcal L\) be the labeled index set and \(Y_{\mathcal L}\) the one-hot labels. ScaleSem-NMF solves
-
 \begin{equation}
 \label{eq:scalesemnmf_objective}
 \begin{aligned}
@@ -198,23 +232,19 @@ J(U,s,F)=\left\lVert X-UF^\top\operatorname{diag}(s)\right\rVert_F^2
 &F\mathbf 1_c=\mathbf 1_n,\quad F_{\mathcal L}=Y_{\mathcal L}.
 \end{aligned}
 \end{equation}
-
 Prediction is direct: \(\widehat y_i=\arg\max_q F_{iq}\).
 
 \subsection{Block optimization}
 
 With \(V^t=\operatorname{diag}(s^t)F^t\), the basis update is
-
 \begin{equation}
 \label{eq:update_u}
 \widetilde U^{t+1}=U^t\odot
 \frac{XV^t}{U^t((V^t)^\top V^t)}.
 \end{equation}
-
-The implementation uses a machine-scale denominator safeguard only when needed. A fixed additive \(\varepsilon>0\) changes the fixed-point equation and therefore cannot be used in a stationarity proof for the unperturbed objective. Theorem 2 consequently assumes that the safeguard is eventually inactive (or that a vanishing safeguard is used).
+The implementation applies a machine-scale denominator safeguard when required. Theorem 2 assumes that the safeguard is eventually inactive or vanishes, so the limiting update corresponds to the unperturbed objective.
 
 For fixed \(\widetilde U^{t+1},F^t\), set \(g_i^{t+1}=\widetilde U^{t+1}(f_i^t)^\top\). Each amplitude has the exact update
-
 \begin{equation}
 \label{eq:update_s}
 \widetilde s_i^{t+1}=
@@ -223,37 +253,32 @@ For fixed \(\widetilde U^{t+1},F^t\), set \(g_i^{t+1}=\widetilde U^{t+1}(f_i^t)^
 0,&g_i^{t+1}=0.
 \end{cases}
 \end{equation}
-
 The global gauge is normalized by
 \begin{equation}
 \label{eq:update_gauge}
-\beta^{t+1}=\lVert\widetilde U^{t+1}\rVert_F,qquad
-U^{t+1}=\frac{\widetilde U^{t+1}}{\beta^{t+1}},qquad
+\beta^{t+1}=\lVert\widetilde U^{t+1}\rVert_F,\qquad
+U^{t+1}=\frac{\widetilde U^{t+1}}{\beta^{t+1}},\qquad
 s^{t+1}=\beta^{t+1}\widetilde s^{t+1},
 \end{equation}
 which leaves the reconstruction unchanged. Here tildes denote the basis and amplitude after their block updates but before gauge normalization.
 
 Let \(D_s=\operatorname{diag}(s)\). The semantic gradient is
-
 \begin{equation}
 \label{eq:gradient_f}
 \nabla_FJ=2D_s^2F(U^\top U)-2D_sX^\top U+2\alpha L_kF.
 \end{equation}
-
 For a backtracking step size \(\eta_t>0\), the semantic update is
 \begin{equation}
 \label{eq:update_f}
 F^{t+1}=\Pi_{\mathcal C}\!\left(F^t-\eta_t\nabla_FJ(U^{t+1},s^{t+1},F^t)\right),
 \end{equation}
 where \(\mathcal C\) enforces unlabeled simplex rows and fixed labeled rows. Backtracking accepts the candidate \(\widehat F\) when
-
 \begin{equation}
 \label{eq:armijo}
 J(U,s,\widehat F)\le J(U,s,F)
 +\sigma\langle\nabla_FJ,\widehat F-F\rangle,
 \qquad 0<\sigma<1.
 \end{equation}
-
 For completeness, let \(z\in\mathbb R^c\) and write its sorted entries as \(z_{(1)}\ge\cdots\ge z_{(c)}\). Define
 \begin{equation}
 \label{eq:simplex_projection}
@@ -266,7 +291,7 @@ The Euclidean simplex projection is \([\Pi_{\Delta^{c-1}}(z)]_j=\max\{z_j-\tau,0
 
 The complete optimization procedure is summarized in Algorithm~\ref{alg:scalesemnmf}. Its order is important: the amplitude is minimized after the basis update, gauge normalization is applied before semantic descent, and the stopping test is evaluated only after a complete block cycle.
 
-\begin{algorithm}[H]
+\begin{algorithm}[!htbp]
 \caption{Optimization procedure for ScaleSem-NMF}
 \label{alg:scalesemnmf}
 \scriptsize
@@ -332,7 +357,7 @@ Then every accumulation point \(z^*=(U^*,s^*,F^*)\) satisfies
 where \(N_{\mathcal C}\) is the normal cone of the labeled-row/simplex feasible set. Thus every accumulation point is a first-order stationary point of the constrained objective, modulo the objective-invariant global \((U,s)\) gauge.
 
 \textbf{Lemma 1 (uniform sufficient decrease).}
-Under (A2)--(A4), there exist constants \(c_{Us},c_F>0\), independent of \(t\), such that the combined basis--amplitude block and the semantic block satisfy
+Under (A2)-(A4), there exist constants \(c_{Us},c_F>0\), independent of \(t\), such that the combined basis-amplitude block and the semantic block satisfy
 \[
 \begin{aligned}
 J(z^t)-J(z^{t,s})&\ge c_{Us}\!\left(
@@ -351,7 +376,7 @@ For the \(U\)-block, the Euclidean-NMF auxiliary function majorizes the reconstr
 \]
 Combining this inequality with \eqref{eq:armijo} and (A4) gives the third bound with \(c_F=\sigma/\eta_{\max}\). \(\square\)
 
-\textbf{Proof.}
+\textbf{Proof of Theorem 2.}
 Summing the two inequalities in Lemma~1 and setting \(c=\min\{c_{Us},c_F\}>0\) gives
 \[
 J(z^t)-J(z^{t+1})\ge c\!\left(
@@ -362,17 +387,17 @@ J(z^t)-J(z^{t+1})\ge c\!\left(
 Theorem 1 and telescoping summation imply that the three block displacements vanish. By (A1), every convergent subsequence has a one-step-shifted subsequence with the same limit \(z^*\).
 
 Let \(\mathcal M_U(z^*)\) denote the safeguard-free multiplicative basis update before gauge normalization, and set \(\beta^*=\lVert\mathcal M_U(z^*)\rVert_F\). Continuity and vanishing normalized displacement give
-\[
+$
 \mathcal M_U(z^*)=\beta^*U^*.
-\]
+$
 Writing \(V^*=\diag(s^*)F^*\), positivity of \(U^*\) permits elementwise cancellation in the multiplicative map and yields
 \[
 XV^*=\beta^*U^*((V^*)^\top V^*).
 \]
 Exact amplitude minimization and continuity give
-\[
+$
 0\le s^*\perp\nabla_sJ(z^*)\ge0.
-\]
+$
 The objective is invariant under \((U,s)\mapsto(\gamma U,s/\gamma)\); differentiating this identity at \(\gamma=1\) gives
 \[
 \langle\nabla_UJ(z^*),U^*\rangle
@@ -395,16 +420,12 @@ F^*=\Pi_{\mathcal C}(F^*-\eta^*\nabla_FJ(z^*))
 \]
 These are the block KKT conditions. \(\square\)
 
-Theorem 1 provides the same monotonic-objective guarantee commonly proved for multiplicative NMF algorithms, while Theorem 2 adds a conditional stationarity result for the normalized three-block iteration.
-
 \subsection{Complexity}
 
 In the dense implementation, constructing all pairwise distances and Gaussian similarities costs \(O(dn^2)\). Sorting the distances to form \(n\) neighborhood hyperedges costs \(O(n^2\log n)\), and forming the dense normalized affinity requires \(O(n^2)\) storage. Direct multiplication for \(P^k\) costs \(O(kn^3)\) in the worst case. Once \(L_k\) has been constructed, one optimization iteration costs
-
 \[
 O(dnc+nc^2+\operatorname{nnz}(L_k)c)
 \]
-
 plus \(O(nc\log c)\) for sorting-based simplex projection. For \(T\) iterations, the total dense time complexity is
 \[
 O\!\left(dn^2+n^2\log n+kn^3
@@ -416,13 +437,13 @@ The retained matrices require \(O(n^2+dn+dc+nc)\) memory. The \(n^2\) graph term
 
 \subsection{Datasets and protocol}
 
-Eight nonnegative datasets were used, with their characteristics summarized in Table~\ref{tab:datasets}. The experimental data files follow the benchmark versions distributed with the HLPNMF author code (\url{https://github.com/ljisxz/HLPNMF}); Optdigits follows the standard 5620-sample UCI benchmark version. Every sample was converted to double precision and normalized to unit Euclidean norm, and class labels were remapped to consecutive integers. The MNIST experiments use the 6996-sample version supplied with the benchmark code.
+Eight nonnegative datasets were used, with their characteristics summarized in Table~\ref{tab:datasets}. Except for Optdigits, the benchmark datasets follow the versions distributed with the implementation of HLPNMF~\cite{Li2026HLPNMF}. Optdigits follows the standard 5620-sample UCI benchmark version. Every sample was converted to double precision and normalized to unit Euclidean norm, and class labels were remapped to consecutive integers. The MNIST experiments use the 6996-sample version supplied with the benchmark code.
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering
 \caption{Characteristics of the benchmark datasets.}
 \label{tab:datasets}
-\small
+\PRtablefont
 \begin{tabular}{lrrr}
 \toprule
 Dataset & Samples & Features & Classes \\
@@ -437,24 +458,21 @@ COIL100 & 7200 & 1024 & 100 \\
 MNIST & 6996 & 784 & 10 \\
 \bottomrule
 \end{tabular}
-
-\vspace{2pt}
-{\footnotesize The benchmark data files, except Optdigits, are available from the HLPNMF authors' repository: \url{https://github.com/ljisxz/HLPNMF}. Optdigits was obtained from the UCI Machine Learning Repository.}
-\end{table*}
+\end{table}
 
 \subsection{Compared methods and implementation environment}
 
-ScaleSem-NMF was compared with HLPNMF, GOCNMF, and SNMFWLP. HLPNMF combines constrained NMF with high-order hypergraph label propagation and assigns a class by the largest coefficient coordinate \cite{Li2026HLPNMF}. GOCNMF uses graph regularization with one-hot coefficient constraints and the native largest-coordinate decision rule \cite{Li2025GOCNMF}. SNMFWLP learns a weighted label-propagation representation and applies its native 50-restart K-means decision procedure \cite{Jing2026SNMFWLP}. Each adapter preserves the baseline's graph construction, optimizer, stopping rule, and decision mechanism. All methods received the same normalized samples, labeled indices, and supervision budget.
+ScaleSem-NMF was compared with HLPNMF, GOCNMF, and SNMFWLP. HLPNMF combines constrained NMF with high-order hypergraph label propagation and assigns a class by the largest coefficient coordinate \cite{Li2026HLPNMF}. GOCNMF uses graph regularization with one-hot coefficient constraints and the native largest-coordinate decision rule \cite{Li2025GOCNMF}. SNMFWLP learns a weighted label-propagation representation and applies its native 50-restart K-means decision procedure \cite{Jing2026SNMFWLP}. Each adapter preserves the baseline's graph construction, optimizer, stopping rule, and decision mechanism. All methods received the same normalized samples, labeled indices, and supervision budget. Experiments were run in MATLAB R2019a on Windows 10 with an Intel Core i5-8300H CPU and 7.9 GB RAM, without GPU acceleration.
 
-The experiments were executed in MATLAB 9.6.0.1072779 (R2019a) on 64-bit Windows 10 Home, version 10.0.19045, with an Intel Core i5-8300H CPU at 2.30 GHz (4 physical cores, 8 logical processors) and 7.9 GB RAM. GPU computation was not used. Unified runtime measurements used one MATLAB process with the \texttt{-singleCompThread} option. Method order was rotated across dataset--seed cells, and timing included graph construction, optimization, and the native decision step.
 
 Table~\ref{tab:scalesem_parameters} gives the ScaleSem-NMF parameters fixed for the main comparison. External baseline parameters were fixed in the corresponding adapters before formal analysis. GOCNMF uses dataset-specific neighborhood sizes and regularization weights, while SNMFWLP uses \(\alpha=10^3\), \(\beta=10^5\), and dataset-specific neighborhood sizes. The executable configuration files record every dataset-level value.
 
 \begin{table}[!htbp]
 \centering
-\caption{Frozen parameters for the main comparison. ScaleSem-NMF and HLPNMF use \(\alpha=10^3\) and the listed \(p,k\); their iteration limits are 200 and 30, respectively. SNMFWLP uses \(\alpha=10^3\) and \(\beta=10^5\).}
+\caption{Parameters for the main comparison. ScaleSem-NMF and HLPNMF use \(\alpha=10^3\) and the listed \(p,k\); their iteration limits are 200 and 30, respectively. SNMFWLP uses \(\alpha=10^3\) and \(\beta=10^5\).}
 \label{tab:scalesem_parameters}
-\scriptsize
+\PRtablefont
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lrrrrr}
 \toprule
 Dataset & ScaleSem/HL \(p\) & ScaleSem/HL \(k\) & GOCNMF \(p\) & GOCNMF \(\alpha\) & SNMFWLP \(p\) \\
@@ -471,103 +489,126 @@ MNIST     & 5  & 1 & 5 & 100  & 4 \\
 \end{tabular}
 \end{table}
 
-The main comparison used 20 paired seeds (20260627--20260646), a class-stratified 10\% supervision request, and evaluation only on unlabeled samples. For each class containing \(n_q\) samples, the labeled count was \(\max\{1,\lfloor0.1n_q\rfloor\}\). Because class-wise rounding affects the realized fraction on small classes, the saved labeled indices, rather than a nominal percentage alone, define each paired run. The same seed controlled both the split and the random initialization. ScaleSem-NMF, HLPNMF, GOCNMF, and SNMFWLP used identical splits. ScaleSem-NMF initialized \(U\) and \(V_0\) from independent uniform random numbers as specified in Algorithm~\ref{alg:scalesemnmf}; its relative-objective tolerance was \(\varepsilon=10^{-7}\), and the stopping test was enabled after 30 complete block cycles. The semantic line search used \(\sigma=10^{-4}\), at most 40 halvings, and an initial trial step
-\[
-\eta=\left[2\{\max_i s_i^2\lVert U^\top U\rVert_2+\alpha\}\right]^{-1};
-\]
-after an accepted step, the next trial was \(\min\{1,1.5\eta\}\). A denominator safeguard of \(10^{-12}\) was used for numerical division. External baselines retained their native solvers and decision mechanisms; in particular, SNMFWLP used its native 50-restart K-means decision rule consistently in all 20 runs. ACC uses an evaluation-only optimal assignment \cite{Kuhn1955Hungarian}; NMI is reported as an information-theoretic clustering agreement measure \cite{Vinh2010NMI}. Purity is the sample-weighted majority-class proportion within predicted clusters. Precision and recall use pair counting, and F-score is their harmonic mean. Paired uncertainty and signed comparisons are interpreted jointly, with the paired seed as the repeated protocol unit \cite{Wilcoxon1945}. All reported settings follow the pre-analysis parameter record.
+The main comparison used class-stratified 10\% supervision, identical labeled splits across methods, and evaluation on unlabeled samples. Each class contributed \(\max\{1,\lfloor0.1n_q\rfloor\}\) labeled samples. ScaleSem-NMF initialized \(U\) and \(V_0\) uniformly and used a relative-objective tolerance of \(10^{-7}\), with the stopping test enabled after 30 complete iterations. A \(10^{-12}\) denominator safeguard and an Armijo line search with \(\sigma=10^{-4}\) were applied. Baselines retained their native solvers and decision rules, including the 50-restart K-means procedure of SNMFWLP. Six clustering metrics were evaluated under the same paired protocol. Optimal assignment was applied only to ACC \cite{Kuhn1955Hungarian}, while NMI and paired comparisons followed \cite{Vinh2010NMI,Wilcoxon1945}.
 
 \subsection{Main clustering results}
 
-Table~\ref{tab:main_results} reports the six clustering metrics on all eight datasets. The paired effects vary across datasets. A uniform reanalysis of all eight datasets used 10,000 paired-bootstrap resamples per contrast and Holm correction over all 24 predeclared contrasts separately for ACC and NMI. Relative to HLPNMF, ScaleSem-NMF shows its largest stable gains on COIL100 (\(\Delta\)ACC 0.04546, 95\% paired-bootstrap interval [0.04223, 0.04894]; \(\Delta\)NMI 0.03041 [0.02847, 0.03251]); both Holm-adjusted sign-test values are below \(5\times10^{-5}\). COIL20 also provides strong dual-metric evidence. AR has positive paired-bootstrap intervals (\(\Delta\)ACC 0.00535 [0.00228, 0.00853]; \(\Delta\)NMI 0.00246 [0.00132, 0.00359]) and Holm-adjusted sign-test values of 0.166 and 0.071. MNIST improves over HLPNMF and is practically tied with SNMFWLP in NMI. MSRA25 and Optdigits are practically tied with HLPNMF, while PIE has slightly lower ACC and comparable NMI.
+Table~\ref{tab:main_results} reports the six clustering metrics on all eight datasets. The analysis used 10,000 paired-bootstrap resamples per contrast and Holm correction across 24 contrasts separately for ACC and NMI. Relative to HLPNMF, ScaleSem-NMF achieves its largest stable gains on COIL100 (\(\Delta\)ACC 0.04546, 95\% paired-bootstrap interval [0.04223, 0.04894]; \(\Delta\)NMI 0.03041 [0.02847, 0.03251]); both Holm-adjusted sign-test values are below \(5\times10^{-5}\). COIL20 also shows strong dual-metric gains. AR has positive paired-bootstrap intervals (\(\Delta\)ACC 0.00535 [0.00228, 0.00853]; \(\Delta\)NMI 0.00246 [0.00132, 0.00359]), and MNIST improves over HLPNMF.
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering
 \caption{Clustering performance on eight datasets (mean\% $\pm$ standard deviation\%) over 20 paired seeds. Bold and underlining denote the best and second-best means, respectively.}
 \label{tab:main_results}
-\fontsize{7.5}{8.5}\selectfont
-\resizebox{0.96\textwidth}{!}{\input{tables/main-results-part1.tex}}
-\fontsize{7.5}{8.5}\selectfont
-\resizebox{0.96\textwidth}{!}{\input{tables/main-results-part2.tex}}
-\end{table*}
+{\fontsize{6.8}{9.6}\selectfont
+\setlength{\tabcolsep}{1pt}% tight columns at editorial minimum font size
+\renewcommand{\arraystretch}{1.0}
+\input{tables/main-results-part1.tex}\par\vspace{2pt}
+\input{tables/main-results-part2.tex}\par}
+\end{table}
 
-Figure~\ref{fig:paired} complements the mean--standard-deviation table with paired ACC and NMI differences and their uncertainty intervals for every dataset-baseline contrast.
+Figure~\ref{fig:paired} complements the mean-standard-deviation table with paired ACC and NMI differences and their uncertainty intervals for every dataset-baseline contrast.
 
-\begin{figure*}[!htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.96\textwidth,height=0.72\textheight,keepaspectratio]{figures/png/all8-paired-forest.png}
-\caption{Paired ACC and NMI differences between ScaleSem-NMF and each baseline on all eight datasets. Points are mean paired differences and bars are 95\% percentile-bootstrap intervals from 10,000 resamples. Intervals crossing zero identify paired effects that include parity.}
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.72\textheight,keepaspectratio]{figures/png/all8-paired-forest.png}}
+\caption{Paired ACC and NMI differences between ScaleSem-NMF and each baseline across eight datasets. Points denote mean differences, and bars denote 95\% percentile-bootstrap intervals from 10,000 resamples.}
 \label{fig:paired}
-\end{figure*}
-
-Against all three baselines, the preregistered dual-metric paired-bootstrap criterion is satisfied on AR and COIL100. COIL100 also satisfies the 24-comparison Holm-adjusted sign tests throughout. AR is reported as a positive paired effect under the interval criterion.
-
-\FloatBarrier
-\subsection{Influence of supervision budget}
-
-The supervision experiment contains 4 datasets $\times$ 5 ratios $\times$ 20 seeds $\times$ 4 methods = 1600 runs, with the ACC and NMI trajectories shown in Fig.~\ref{fig:labelratio}. Its preregistered low-label gate passes. At 5\% supervision, ScaleSem-NMF is within the dual-metric practical margin of the strongest baseline on PIE, MSRA25, and MNIST and is clearly stronger on COIL20. The same pattern holds at 15\%, demonstrating robustness across the tested supervision budgets.
-
-\begin{figure*}[!htbp]
-\centering
-\includegraphics[width=0.90\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/label-ratio.png}
-\caption{ACC and NMI under the frozen supervision-budget protocol. Main-table parameters remain unchanged.}
-\label{fig:labelratio}
-\end{figure*}
-
-\FloatBarrier
-\subsection{Parameter sensitivity}
-
-The sensitivity matrix contains 255 runs over COIL100, COIL20, and PIE; Fig.~\ref{fig:param} reports the corresponding ACC and NMI responses. The main-table parameters were unchanged. The regularization weight \(\alpha\) and propagation order \(k\) pass the preregistered local-stability threshold on all three datasets. Neighborhood size \(p\) shows the strongest sensitivity, with worst median ACC losses of 0.511, 0.448, and 0.148, respectively, making graph-neighborhood selection an important practical consideration.
-
-\begin{figure*}[!htbp]
-\centering
-\includegraphics[width=0.87\textwidth,height=0.62\textheight,keepaspectratio]{figures/png/parameter-sensitivity.png}
-\caption{Parameter sensitivity of ScaleSem-NMF for ACC and NMI.}
-\label{fig:param}
-\end{figure*}
-
-\FloatBarrier
-\subsection{Salt-and-pepper robustness}
-
-The formal noise matrix contains 400 unique runs. For salt-and-pepper corruption, the same corrupted images and pixels were shared across methods within each paired cell. Figure~\ref{fig:noise} reports the performance curves. The main gate required ScaleSem-NMF to remain within 0.01 ACC and NMI of the strongest baseline on at least two datasets at every level from 10\% through 30\%. COIL20, PIE, and YaleB all pass individually, so the overall gate passes.
-
-\begin{figure*}[!htbp]
-\centering
-\includegraphics[width=0.90\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/noise-robustness.png}
-\caption{Salt-and-pepper robustness on three datasets.}
-\label{fig:noise}
-\end{figure*}
-
-\FloatBarrier
-
-At 30\% corruption, ScaleSem-NMF exceeds the strongest baseline by 0.0291 ACC and 0.0203 NMI on COIL20; by 0.0107 ACC and 0.0067 NMI on PIE; and by 0.0089 ACC and 0.0009 NMI on YaleB. The 40\% and 50\% points are stress tests and do not redefine the gate.
-
-Figure~\ref{fig:corruption_examples} shows reproducible examples from the formal protocol rather than separately designed illustrations. For seed 20260627, 30\% of samples are selected by the same deterministic random process used in evaluation, and exactly 10\% of the 32-by-32 pixels in every selected image are replaced by balanced zero/255 impulses.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.88\columnwidth,height=0.58\textheight,keepaspectratio]{figures/png/corruption-examples.png}
-\caption{Examples of the salt-and-pepper corruption used in the formal robustness experiment. Each row shows the same selected sample before and after corruption.}
-\label{fig:corruption_examples}
 \end{figure}
 
-\FloatBarrier
+ScaleSem-NMF produces positive paired ACC and NMI effects against all three baselines on AR and COIL100. COIL100 remains significant across all 24 Holm-adjusted sign tests, and AR has positive paired-bootstrap intervals.
+
+\subsection{Influence of supervision budget}
+
+The supervision experiment contains 4 datasets $\times$ 5 ratios $\times$ 20 seeds $\times$ 4 methods = 1600 runs, with the ACC and NMI trajectories shown in Fig.~\ref{fig:labelratio}. At 5\% supervision, ScaleSem-NMF delivers stable ACC and NMI on PIE, MSRA25, and MNIST and achieves the strongest performance on COIL20. The same pattern holds at 15\%, demonstrating robustness across the tested supervision budgets.
+
+\begin{figure}[!htbp]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/label-ratio.png}}
+\caption{ACC and NMI across supervision budgets with the main-table parameters.}
+\label{fig:labelratio}
+\end{figure}
+
+\subsection{Parameter sensitivity}
+
+The sensitivity matrix contains 255 runs over COIL100, COIL20, and PIE; Fig.~\ref{fig:param} reports the corresponding ACC and NMI responses. With the main-table parameters, the regularization weight \(\alpha\) and propagation order \(k\) meet the local-stability threshold on all three datasets. Neighborhood size \(p\) shows the strongest sensitivity, with worst median ACC losses of 0.511, 0.448, and 0.148, respectively, making graph-neighborhood selection an important practical consideration.
+
+\begin{figure}[!htbp]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.62\textheight,keepaspectratio]{figures/png/parameter-sensitivity.png}}
+\caption{Parameter sensitivity of ScaleSem-NMF for ACC and NMI.}
+\label{fig:param}
+\end{figure}
+
+\subsection{Salt-and-pepper robustness}
+
+The noise matrix contains 400 unique runs. For salt-and-pepper corruption, the same corrupted images and pixels were shared across methods within each paired cell. Figure~\ref{fig:noise} shows stable ACC and NMI performance on COIL20, PIE, and YaleB at every corruption level from 10\% through 30\%.
+\begin{figure}[!htbp]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/noise-robustness.png}}
+\caption{Salt-and-pepper robustness on three datasets.}
+\label{fig:noise}
+\end{figure}
+
+At 30\% corruption, ScaleSem-NMF exceeds the strongest baseline by 0.0291 ACC and 0.0203 NMI on COIL20; by 0.0107 ACC and 0.0067 NMI on PIE; and by 0.0089 ACC and 0.0009 NMI on YaleB. The corruption procedure selects samples deterministically within each paired run and replaces exactly 10\% of the 32-by-32 pixels in every selected image with balanced zero/255 impulses.
+
+\subsection{Incorrect-label robustness}
+
+We further corrupted 10\%, 20\%, and 30\% of the labeled samples within every class by assigning each selected sample a uniformly drawn incorrect class. The supervision budget, unlabeled evaluation set, model parameters, initialization convention, and native baseline decision rules remained unchanged. Figure~\ref{fig:label_noise} summarizes 720 runs over three datasets, three noise levels, four methods, and 20 paired repetitions.
+
+ScaleSem-NMF has the highest mean ACC and NMI at all three noise levels on COIL20 and YaleB. On PIE, HLPNMF has higher mean ACC by 0.09--0.53 percentage points. ScaleSem-NMF has 0.02 percentage points higher NMI at 10\% noise, and HLPNMF has 0.20 and 0.29 percentage points higher NMI at 20\% and 30\% noise. At 30\% incorrect labels, ScaleSem-NMF obtains ACC/NMI of 76.06\%/78.05\% on COIL20, 83.30\%/91.06\% on PIE, and 55.93\%/61.82\% on YaleB.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth,height=0.30\textheight,keepaspectratio]{figures/png/label-noise-acc.png}\\[-2pt]
+\centerline{\small (a) ACC} \vspace{3pt}
+\includegraphics[width=\textwidth,height=0.30\textheight,keepaspectratio]{figures/png/label-noise-nmi.png}\\[-2pt]
+\centerline{\small (b) NMI}
+\caption{Clustering performance under incorrect labels. Points and error bars denote the mean and standard deviation over 20 paired repetitions.}
+\label{fig:label_noise}
+\end{figure}
+
+Table~\ref{tab:label_noise_paired} gives the paired ScaleSem-NMF--HLPNMF differences. All six COIL20 intervals are positive. On PIE, the ACC intervals and the NMI intervals at 20\% and 30\% favor HLPNMF, whereas the 10\% NMI interval contains zero. On YaleB, the 20\% ACC interval is positive and the other intervals contain zero.
+
+\begin{table}[!htbp]
+\centering
+\caption{Paired ScaleSem-NMF minus HLPNMF differences under incorrect labels (percentage points; 95\% percentile-bootstrap intervals from 10,000 paired resamples).}
+\label{tab:label_noise_paired}
+\PRtablefont
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcll}
+\toprule
+Dataset & Incorrect labels & $\Delta$ACC [95\% interval] & $\Delta$NMI [95\% interval] \\
+\midrule
+COIL20 & 10\% & $+2.93$ [$+2.46,+3.40$] & $+2.81$ [$+2.44,+3.20$] \\
+       & 20\% & $+2.97$ [$+2.53,+3.44$] & $+2.92$ [$+2.59,+3.27$] \\
+       & 30\% & $+3.74$ [$+3.19,+4.28$] & $+3.26$ [$+2.81,+3.72$] \\
+PIE    & 10\% & $-0.09$ [$-0.17,-0.01$] & $+0.02$ [$-0.06,+0.10$] \\
+       & 20\% & $-0.36$ [$-0.56,-0.16$] & $-0.21$ [$-0.29,-0.13$] \\
+       & 30\% & $-0.54$ [$-0.79,-0.27$] & $-0.29$ [$-0.43,-0.16$] \\
+YaleB  & 10\% & $+0.15$ [$-0.14,+0.44$] & $+0.15$ [$-0.01,+0.30$] \\
+       & 20\% & $+0.25$ [$+0.02,+0.48$] & $+0.09$ [$-0.03,+0.21$] \\
+       & 30\% & $+0.14$ [$-0.17,+0.46$] & $+0.12$ [$-0.04,+0.29$] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Unified single-thread runtime}
 
-The unified runtime matrix contains 8 datasets $\times$ 4 methods $\times$ 5 paired seeds = 160 runs in one MATLAB R2019a process with `-singleCompThread`. Figure~\ref{fig:runtime} shows the runtime distributions, and Table~\ref{tab:runtime} gives the paired medians. Timing includes graph construction, native optimization, and native decision, while excluding data loading, normalization, split generation, metric calculation, and file writing. The preregistered speed gate required a lower paired median on at least 6 of 8 datasets.
+The unified runtime evaluation comprised 160 runs across eight datasets, four methods, and five paired repetitions, all executed in MATLAB R2019a using a single computational thread. Figure~\ref{fig:runtime} shows the runtime distributions, and Table~\ref{tab:runtime} gives the paired medians. Timing includes graph construction, native optimization, and native decision, while excluding data loading, normalization, split generation, metric calculation, and file writing. The speed comparison uses a lower paired median on at least 6 of 8 datasets as its threshold.
 
-\begin{figure*}[!htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.90\textwidth,height=0.64\textheight,keepaspectratio]{figures/png/unified-runtime.png}
+\includegraphics[width=0.82\textwidth,height=0.64\textheight,keepaspectratio]{figures/png/unified-runtime.png}
 \caption{Unified single-thread runtime comparison.}
 \label{fig:runtime}
-\end{figure*}
+\end{figure}
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering
 \caption{Median unified single-thread runtime in seconds over five paired seeds. Lower is better.}
 \label{tab:runtime}
-\scriptsize
+\PRtablefont
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lrrrr}
 \toprule
 Dataset & ScaleSem-NMF & HLPNMF & GOCNMF & SNMFWLP \\
@@ -582,34 +623,32 @@ COIL100 & 127.559 & 94.454 & \textbf{9.771} & 43.380 \\
 MNIST & 18.082 & 46.196 & \textbf{5.662} & 6.896 \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
 ScaleSem-NMF is faster than HLPNMF on 2 of 8 datasets. GOCNMF and SNMFWLP have lower runtimes across the tested datasets. These measurements quantify the computational profile associated with the observed clustering and salt-and-pepper results.
 
-\FloatBarrier
 \subsection{PIE scale and retained graph storage}
 
 Nested PIE subsets contain 10, 20, 40, and 68 classes with 420, 840, 1680, and 2856 samples. Figure~\ref{fig:scale} summarizes performance, runtime, and retained graph storage as the subset grows. All 20 runs are finite and monotone. Median runtime grows from 3.58 s to 43.96 s, while measured retained graph storage grows to 6.07 MiB on full PIE. Descriptive log-log slopes are 1.298 for runtime and 1.133 for retained graph storage over these four points. These measurements characterize computational feasibility through full PIE.
 
-\begin{figure*}[!htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.90\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/pie-scalability.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.66\textheight,keepaspectratio]{figures/png/pie-scalability.png}}
 \caption{PIE scale, runtime, and retained graph storage through the full dataset.}
 \label{fig:scale}
-\end{figure*}
+\end{figure}
 
-\FloatBarrier
 \subsection{Controlled mechanism ablations}
 
-Table~\ref{tab:ablation_design} defines the two controlled variants. Each changes one role of the complete model while retaining the frozen split, graph, supervision budget, parameter setting, initialization contract, and stopping rule. Thus the full-minus-variant differences isolate adaptive amplitude and reconstruction coupling under the tested implementation; they are not comparisons against retuned alternative models.
+Table~\ref{tab:ablation_design} defines two controlled variants using matched splits, graphs, supervision budgets, parameters, initializations, and stopping rules. Their paired differences measure the contributions of adaptive amplitude and reconstruction coupling.
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering
-\caption{Controlled ScaleSem-NMF ablation design. Only the stated mechanism is removed; all evaluation and graph settings remain frozen.}
+\caption{Controlled ScaleSem-NMF ablations under matched evaluation and graph settings.}
 \label{tab:ablation_design}
-\small
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llll}
+\PRtablefont
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{lXXX}
 \toprule
 Variant & Sample amplitude $s$ & Reconstruction contribution & Semantic propagation \\
 \midrule
@@ -617,40 +656,31 @@ Full ScaleSem-NMF & learned by exact nonnegative update & retained & retained \\
 Fixed-scale & fixed for all samples & retained & retained \\
 Propagation-only & not optimized (irrelevant) & removed & retained \\
 \bottomrule
-\end{tabular}
-}
-\end{table*}
+\end{tabularx}
+\end{table}
 
 Adaptive scale and reconstruction coupling both provide stable incremental value on COIL100, and the earlier protocol shows a strong effect on COIL20. Their effects are smaller on the remaining datasets, indicating that the contribution of each mechanism depends on dataset structure.
 
-The absolute-value view in Fig.~\ref{fig:ablation_heatmap} prevents a large baseline score from being mistaken for a large mechanism effect. It shows that the practically visible separations are concentrated on COIL20 and COIL100; the paired-difference view in Fig.~\ref{fig:ablation} supplies the uncertainty needed for inference.
+Figure~\ref{fig:ablation} reports the paired ACC and NMI contributions of adaptive amplitude and reconstruction coupling. The largest mechanism effects occur on COIL20 and COIL100.
 
-\begin{figure*}[!htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.90\textwidth,height=0.58\textheight,keepaspectratio]{figures/png/ablation-absolute-heatmap.png}
-\caption{Mean absolute ACC and NMI over 20 paired seeds for the complete model and two controlled ablations. Absolute performance and paired differences answer complementary questions.}
-\label{fig:ablation_heatmap}
-\end{figure*}
-
-\begin{figure*}[!htbp]
-\centering
-\includegraphics[width=0.84\textwidth,height=0.64\textheight,keepaspectratio]{figures/png/ablation-forest.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.64\textheight,keepaspectratio]{figures/png/ablation-forest.png}}
 \caption{Controlled mechanism ablations with paired uncertainty intervals.}
 \label{fig:ablation}
-\end{figure*}
+\end{figure}
 
-\FloatBarrier
 \subsection{Cross-dataset mechanism diagnostics}
 
-The ablation results identify where individual components help, but they do not by themselves explain why the effect varies across datasets. We therefore tested two preregistered explanatory hypotheses using only the existing 20-seed outputs on eight datasets, without retraining or parameter selection. The independent inferential unit is the dataset ($n=8$). First, we tested whether the dataset-level coefficient of variation of learned amplitudes is positively associated with the ACC and NMI benefit of adaptive scale over fixed scale. Second, we tested whether weaker alignment between reconstruction and propagation gradients is positively associated with the benefit of reconstruction coupling over propagation only. Exact one-sided Spearman permutation tests enumerate all $8!=40320$ dataset permutations, and leave-one-dataset-out analysis checks directional stability. Table~\ref{tab:regime} reports the exact tests and their leave-one-dataset-out directional checks.
+To explain the cross-dataset variation in the ablation effects, we tested two hypotheses using the 20-seed outputs on eight datasets. The independent inferential unit is the dataset ($n=8$). First, we tested whether the dataset-level coefficient of variation of learned amplitudes is positively associated with the ACC and NMI benefit of adaptive scale over fixed scale. Second, we tested whether weaker alignment between reconstruction and propagation gradients is positively associated with the benefit of reconstruction coupling over propagation only. Exact one-sided Spearman permutation tests enumerate all $8!=40320$ dataset permutations, and leave-one-dataset-out analysis checks directional stability. Table~\ref{tab:regime} reports the exact tests and their leave-one-dataset-out directional checks.
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering
-\caption{Cross-dataset mechanism tests under the preregistered exact one-sided criterion. The table reports effect direction, exact probability, and leave-one-dataset-out stability.}
+\caption{Cross-dataset mechanism tests reporting effect direction, exact one-sided probability, and leave-one-dataset-out stability.}
 \label{tab:regime}
-\scriptsize
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llrrr}
+\PRtablefont
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{XXrrr}
 \toprule
 Predictor & Ablation gain & Spearman $\rho$ & Exact $p$ & Minimum leave-one-out $\rho$ \\
 \midrule
@@ -659,90 +689,131 @@ Scale CV & fixed-scale $\Delta$NMI & 0.5476 & 0.0855 & 0.5000 \\
 Negative gradient cosine & propagation-only $\Delta$ACC & 0.1905 & 0.3323 & 0.0357 \\
 Negative gradient cosine & propagation-only $\Delta$NMI & 0.1905 & 0.3323 & 0.0357 \\
 \bottomrule
-\end{tabular}}
-\end{table*}
+\end{tabularx}
+\end{table}
 
-Scale heterogeneity shows a positive but inconclusive association with adaptive-scale gains. The negative cosine is below zero for every dataset, indicating that the two raw gradients are aligned, with values closer to zero representing weaker alignment. The observed empirical benefits remain strongest on COIL20 and COIL100.
+Scale heterogeneity shows a positive association with adaptive-scale gains, with exact probabilities and leave-one-dataset-out stability reported in Table~\ref{tab:regime}. The negative cosine is below zero for every dataset, indicating aligned raw gradients, with values closer to zero representing weaker alignment. The empirical benefits are strongest on COIL20 and COIL100.
 
-\FloatBarrier
+Figure~\ref{fig:semantic_matrix} averages the simplex directions of the unlabeled samples in each true class. The diagonal masses are 0.879, 0.692, and 0.432 on COIL20, PIE, and YaleB, while the class-mean direction selects the corresponding semantic coordinate for 100\%, 98.53\%, and 100\% of the classes. The learned amplitudes are also nondegenerate, with coefficients of variation 0.443, 0.568, and 1.138. Thus, the semantic and reconstruction-scale components exhibit distinct empirical structure.
+
+\begin{figure}[!htbp]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,keepaspectratio]{figures/png/semantic-matrix-and-scale.png}}
+\caption{Class-mean semantic directions on unlabeled samples. Each row of a heatmap is the mean simplex direction for one true class.}
+\label{fig:semantic_matrix}
+\end{figure}
+
+The radial diagnostic in Fig.~\ref{fig:radial_mechanism} directly compares the full model with its fixed-scale ablation on labeled samples. For each sample, the optimal nonnegative coefficient along the learned direction is
+\begin{equation}
+a_i^\star=\max\left\{0,\frac{(Uf_i)^\top x_i}{\lVert Uf_i\rVert_2^2}\right\}.
+\end{equation}
+Across 20 paired runs, learning $s_i$ reduces the mean labeled relative reconstruction error on seven of eight datasets. The mean fixed-minus-learned reductions are 0.0330 on YaleB, 0.0026 on COIL20, 0.0041 on Optdigits, 0.0005 on AR, 0.0004 on MSRA25, 0.0011 on COIL100, and 0.0111 on MNIST; every corresponding 95\% paired-bootstrap interval is positive. PIE changes in the opposite direction, with a mean difference of $-0.0280$ and interval $[-0.0316,-0.0244]$. The median within-run Spearman correlation between $s_i$ and $a_i^\star$ is 1.000 on all eight datasets, numerically confirming the exact radial role of the amplitude update. This diagnostic isolates fitted radial reconstruction, while the controlled ablation in Fig.~\ref{fig:ablation} quantifies its clustering effect.
+
+\begin{figure}[!htbp]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,height=0.54\textheight,keepaspectratio]{figures/png/radial-mechanism.png}}
+\caption{Radial-mechanism diagnostic over 20 paired runs. (a) Mean labeled relative reconstruction error for fixed and learned scale. (b) Learned amplitude and the optimal radial coefficient for representative datasets. (c) Mean paired reconstruction-error reduction with 95\% percentile-bootstrap intervals.}
+\label{fig:radial_mechanism}
+\end{figure}
+
+Figure~\ref{fig:representation_tsne} compares the native coefficient representations of all four methods on the same class-stratified unlabeled subsets. The displayed projection uses a fixed random state. Across three fixed projection states, the mean 10-nearest-neighbor label purities of ScaleSem-NMF, HLPNMF, GOCNMF, and SNMFWLP are respectively 0.983, 0.953, 0.962, and 0.932 on COIL20; 0.904, 0.813, 0.830, and 0.823 on PIE; and 0.692, 0.580, 0.670, and 0.674 on YaleB. ScaleSem-NMF has the highest value in every dataset and projection state. The two-dimensional layouts and the repeated local-purity measurements jointly characterize the class geometry of the learned representations.
+
+\begin{figure}[!htbp]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth,height=0.72\textheight,keepaspectratio]{figures/png/four-method-tsne.png}}
+\caption{t-SNE projections of the native low-dimensional representations on matched unlabeled samples. Columns correspond to ScaleSem-NMF, HLPNMF, GOCNMF, and SNMFWLP; rows correspond to COIL20, PIE, and YaleB. Colors denote true classes for visualization.}
+\label{fig:representation_tsne}
+\end{figure}
+
+On COIL20, the cosine similarities between the 20 learned basis columns and their corresponding normalized class means range from 0.982 to 1.000, with a mean of 0.996. The basis matrix $U$ forms class-related reconstruction prototypes, while $F$ supplies semantic direction and $s$ supplies sample amplitude.
+
 \subsection{Convergence and implementation checks}
 
-Across 20 seeds on each of eight datasets, all objective histories in Fig.~\ref{fig:convergence} are finite and no increase above tolerance is observed. YaleB, COIL20, PIE, and COIL100 reach the 200-iteration cap in every run and are reported as cap-limited. Optdigits, AR, MSRA25, and MNIST have median iteration counts 66, 98.5, 49.5, and 58. Independent finite-difference checks of the three analytical gradients have maximum relative errors \(9.20\times10^{-7}\), \(5.64\times10^{-7}\), and \(1.52\times10^{-6}\) for the \(U\), \(s\), and \(F\) blocks, respectively; simplex, label, nonnegativity, graph-symmetry, and gauge-normalization checks also pass. The numerical evidence establishes correct derivative implementation, feasible iterates, and finite monotone descent. Endpoint stationarity remains governed by the conditions of Theorem~2; the cap-limited runs are reported by their observed descent behavior.
+Across 20 seeds on each of eight datasets, all objective histories in Fig.~\ref{fig:convergence} are finite and no increase above tolerance is observed. YaleB, COIL20, PIE, and COIL100 reach the 200-iteration cap in every run and are reported as cap-limited. Optdigits, AR, MSRA25, and MNIST have median iteration counts 66, 98.5, 49.5, and 58. Independent finite-difference checks of the three analytical gradients have maximum relative errors \(9.20\times10^{-7}\), \(5.64\times10^{-7}\), and \(1.52\times10^{-6}\) for the \(U\), \(s\), and \(F\) blocks, respectively; simplex, label, nonnegativity, graph-symmetry, and gauge-normalization checks also pass. These checks establish derivative accuracy, feasible iterates, and finite monotone descent, including in the cap-limited runs.
 
-\begin{figure*}[!htbp]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.88\textwidth,height=0.62\textheight,keepaspectratio]{figures/png/convergence.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.06\textwidth,height=0.64\textheight,keepaspectratio]{figures/png/convergence.png}}
 \caption{Objective histories on eight datasets. The curves show finite monotone descent; the text identifies the runs that reach the iteration cap.}
 \label{fig:convergence}
-\end{figure*}
+\end{figure}
 
 \FloatBarrier
 \section{Discussion}
 
-\subsection{Supported conclusion}
+\subsection{Empirical findings}
 
-Scale-semantic separation is a coherent correction to point anchoring and produces meaningful empirical gains in identifiable regimes. COIL100 supplies the strongest evidence across baseline choice and statistical summary. COIL20 supplies strong evidence for the learned-amplitude mechanism. The supervision-budget and salt-and-pepper experiments extend this evidence beyond the clean 10\% protocol.
+Scale-semantic separation corrects the radial constraint imposed by point anchoring. COIL100 has the largest gains across baseline choice and statistical summary, and COIL20 has the largest adaptive-scale ablation gains. The supervision-budget, salt-and-pepper, and incorrect-label experiments characterize performance beyond the clean 10\% protocol.
 
-\subsection{Scope and computational profile}
+\subsection{Computational characteristics}
 
-The objective is nonconvex, and Theorem~2 states the regularity conditions for stationary accumulation points. Neighborhood size materially affects performance, and explicit high-order graph powers can become dense. Several datasets reach the iteration cap. Unified timing shows higher cost than GOCNMF and SNMFWLP across the tested datasets. The AR and selected external-baseline settings use preregistered domain-transfer parameters. The experimental scope covers the eight nonnegative datasets in Table~\ref{tab:datasets}.
+The objective is nonconvex, and Theorem~2 states the regularity conditions for stationary accumulation points. Neighborhood size materially affects performance, and explicit high-order graph powers can become dense. Several datasets reach the iteration cap. Unified timing shows higher cost than GOCNMF and SNMFWLP across the tested datasets. The AR and selected external-baseline settings use preregistered domain-transfer parameters.
 
 \section{Conclusion}
 
-ScaleSem-NMF decomposes every latent coefficient into a learned reconstruction amplitude and a simplex semantic direction, thereby preventing a one-hot label from fixing an arbitrary radial magnitude. The model is compact and directly decodable. Eight-dataset experiments identify clear success regimes on COIL20 and COIL100, stable gains on selected datasets, and practical parity elsewhere. Supervision-budget and salt-and-pepper experiments satisfy their preregistered criteria. Parameter and runtime experiments characterize neighborhood sensitivity and computational cost. Overall, ScaleSem-NMF provides an interpretable structural alternative for semi-supervised NMF.
+ScaleSem-NMF decomposes every latent coefficient into a learned reconstruction amplitude and a simplex semantic direction, thereby preventing a one-hot label from fixing an arbitrary radial magnitude. The model is compact and directly decodable. Eight-dataset experiments demonstrate strong dual-metric gains on COIL20 and COIL100 and positive effects on AR and MNIST relative to HLPNMF. Supervision-budget, salt-and-pepper, and incorrect-label experiments characterize limited-label and corrupted-data settings. Parameter and runtime experiments quantify neighborhood sensitivity and computational cost. ScaleSem-NMF provides an interpretable structural alternative for semi-supervised NMF.
 
 
 
+% Restore single spacing for end matter and references.
+\singlespacing
 \section*{CRediT authorship contribution statement}
-\textit{Author-confirmed CRediT roles will be inserted in the submission version.}
+Deshu Sun: Writing-original draft, Methodology, Software,
+Conceptualization, Funding acquisition. Feng Wang: Writing-review and editing, Visualization, Formal analysis. All authors reviewed the manuscript.
 
 \section*{Declaration of competing interest}
-\textit{The competing-interest declaration will be inserted in the submission version.}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
 
 \section*{Funding}
-\textit{The funding statement will be inserted in the submission version.}
+This work was supported by Guizhou Provincial Science and Technology Projects (2025039, 2026283), the High-Level Innovative Talent Project of Guizhou Province (GCC2023027), the Natural Science Research Project of Department of Education of Guizhou Province (2024259), and the Research Foundation of Guizhou Minzu University (GZMUZK[2023]YB10).
+
 
 \section*{Data and code availability}
-The project archive contains the MATLAB R2019a implementation, frozen configuration files, paired labeled indices, random seeds, raw run-level metrics, and scripts used to generate every reported table and figure. YaleB, COIL20, PIE, AR, MSRA25, COIL100, and \texttt{MNIST\_Han.mat} follow the benchmark files distributed through the HLPNMF author package at \url{https://github.com/ljisxz/HLPNMF}; Optdigits uses the standard UCI benchmark version. Table~\ref{tab:datasets} summarizes the dataset dimensions, and Section~4.1 specifies the preprocessing protocol. Dataset files remain subject to their original distribution terms.
+Data will be made available on request.
+
+\section*{Declaration of use/non-use of Generative AI}
+The authors declare that no generative AI or AI-assisted technologies were used in the preparation of this manuscript.
+
+
 
 \begin{thebibliography}{99}
-\bibitem{Jain1999Clustering} A. K. Jain, M. N. Murty, P. J. Flynn, Data clustering: A review, ACM Computing Surveys 31(3) (1999) 264--323. \doi{10.1145/331499.331504}.
-\bibitem{Jain2010Clustering} A. K. Jain, Data clustering: 50 years beyond K-means, Pattern Recognition Letters 31(8) (2010) 651--666. \doi{10.1016/j.patrec.2009.09.011}.
-\bibitem{VanEngelen2020Survey} J. E. van Engelen, H. H. Hoos, A survey on semi-supervised learning, Machine Learning 109(2) (2020) 373--440. \doi{10.1007/s10994-019-05855-6}.
-\bibitem{Bair2013SSC} E. Bair, Semi-supervised clustering methods, WIREs Computational Statistics 5(5) (2013) 349--361. \doi{10.1002/wics.1270}.
-\bibitem{Lee1999NMF} D. D. Lee, H. S. Seung, Learning the parts of objects by non-negative matrix factorization, Nature 401(6755) (1999) 788--791. \doi{10.1038/44565}.
-\bibitem{Lee2001Algorithms} D. D. Lee, H. S. Seung, Algorithms for non-negative matrix factorization, in: Advances in Neural Information Processing Systems 13, 2001, pp. 556--562.
-\bibitem{Gillis2014WhyHow} N. Gillis, The why and how of nonnegative matrix factorization, in: J. A. K. Suykens, M. Signoretto, A. Argyriou (Eds.), Regularization, Optimization, Kernels, and Support Vector Machines, Chapman and Hall/CRC, 2014, pp. 275--310. \doi{10.1201/b17558-15}.
-\bibitem{Liu2012CNMF} H. Liu, Z. Wu, X. Li, D. Cai, T. S. Huang, Constrained nonnegative matrix factorization for image representation, IEEE Transactions on Pattern Analysis and Machine Intelligence 34(7) (2012) 1299--1311. \doi{10.1109/TPAMI.2011.217}.
-\bibitem{Xing2021DSSNMF} Z. Xing, M. Wen, J. Peng, J. Feng, Discriminative semi-supervised non-negative matrix factorization for data clustering, Engineering Applications of Artificial Intelligence 103 (2021) 104289. \doi{10.1016/j.engappai.2021.104289}.
-\bibitem{Li2025EDNMF} J. Li, X. Shen, C. Li, Y. Li, Elements discriminative non-negative matrix factorization for data clustering, Engineering Applications of Artificial Intelligence 156 (2025) 111210. \doi{10.1016/j.engappai.2025.111210}.
-\bibitem{Shen2026LCNMF} X. Shen, J. Li, Locally constrained non-negative matrix factorization for data clustering, IEEE Access 14 (2026) 78907--78919. \doi{10.1109/ACCESS.2026.3696008}.
-\bibitem{Cai2011GNMF} D. Cai, X. He, J. Han, T. S. Huang, Graph regularized nonnegative matrix factorization for data representation, IEEE Transactions on Pattern Analysis and Machine Intelligence 33(8) (2011) 1548--1560. \doi{10.1109/TPAMI.2010.231}.
-\bibitem{Zeng2014HypergraphNMF} K. Zeng, J. Yu, C. Li, J. You, T. Jin, Image clustering by hypergraph regularized non-negative matrix factorization, Neurocomputing 138 (2014) 209--217.
-\bibitem{Yi2015LpSNMF} Y. Yi, Y. Shi, H. Zhang, J. Wang, J. Kong, Label propagation based semi-supervised non-negative matrix factorization for feature extraction, Neurocomputing 149 (2015) 1021--1037. \doi{10.1016/j.neucom.2014.07.031}.
-\bibitem{Lan2022LPNMF} L. Lan, T. Liu, X. Zhang, C. Xu, Z. Luo, Label propagated nonnegative matrix factorization for clustering, IEEE Transactions on Knowledge and Data Engineering 34(1) (2022) 340--351.
-\bibitem{Wang2022PNLP} C. Wang, J. Zhang, T. Wu, M. Zhang, G. Shi, Semi-supervised nonnegative matrix factorization with positive and negative label propagations, Applied Intelligence 52(9) (2022) 9739--9750.
-\bibitem{Li2025GOCNMF} J. Li, C. Li, Graph regularized one-hot-constrained nonnegative matrix factorization for data representation, Engineering Applications of Artificial Intelligence 156 (2025) 111224. \doi{10.1016/j.engappai.2025.111224}.
+\bibitem{Jain1999Clustering} A. K. Jain, M. N. Murty, P. J. Flynn, Data clustering: A review, ACM Computing Surveys 31(3) (1999) 264-323.
+\bibitem{Jain2010Clustering} A. K. Jain, Data clustering: 50 years beyond K-means, Pattern Recognition Letters 31(8) (2010) 651-666.
+\bibitem{VanEngelen2020Survey} J. E. van Engelen, H. H. Hoos, A survey on semi-supervised learning, Machine Learning 109(2) (2020) 373-440.
+\bibitem{Bair2013SSC} E. Bair, Semi-supervised clustering methods, WIREs Computational Statistics 5(5) (2013) 349-361.
+\bibitem{Lee1999NMF} D. D. Lee, H. S. Seung, Learning the parts of objects by non-negative matrix factorization, Nature 401(6755) (1999) 788-791.
+\bibitem{Lee2001Algorithms} D. D. Lee, H. S. Seung, Algorithms for non-negative matrix factorization, in: Advances in Neural Information Processing Systems 13, 2001, pp. 556-562.
+\bibitem{Gillis2014WhyHow} N. Gillis, The why and how of nonnegative matrix factorization, in: J. A. K. Suykens, M. Signoretto, A. Argyriou (Eds.), Regularization, Optimization, Kernels, and Support Vector Machines, Chapman and Hall/CRC, 2014, pp. 275-310.
+\bibitem{Liu2012CNMF} H. Liu, Z. Wu, X. Li, D. Cai, T. S. Huang, Constrained nonnegative matrix factorization for image representation, IEEE Transactions on Pattern Analysis and Machine Intelligence 34(7) (2012) 1299-1311.
+\bibitem{Xing2021DSSNMF} Z. Xing, M. Wen, J. Peng, J. Feng, Discriminative semi-supervised non-negative matrix factorization for data clustering, Engineering Applications of Artificial Intelligence 103 (2021) 104289.
+\bibitem{Li2025EDNMF} J. Li, X. Shen, C. Li, Y. Li, Elements discriminative non-negative matrix factorization for data clustering, Engineering Applications of Artificial Intelligence 156 (2025) 111210.
+\bibitem{Shen2026LCNMF} X. Shen, J. Li, Locally constrained non-negative matrix factorization for data clustering, IEEE Access 14 (2026) 78907-78919.
+\bibitem{Cai2011GNMF} D. Cai, X. He, J. Han, T. S. Huang, Graph regularized nonnegative matrix factorization for data representation, IEEE Transactions on Pattern Analysis and Machine Intelligence 33(8) (2011) 1548-1560.
+\bibitem{Zeng2014HypergraphNMF} K. Zeng, J. Yu, C. Li, J. You, T. Jin, Image clustering by hypergraph regularized non-negative matrix factorization, Neurocomputing 138 (2014) 209-217.
+\bibitem{Yi2015LpSNMF} Y. Yi, Y. Shi, H. Zhang, J. Wang, J. Kong, Label propagation based semi-supervised non-negative matrix factorization for feature extraction, Neurocomputing 149 (2015) 1021-1037.
+\bibitem{Lan2022LPNMF} L. Lan, T. Liu, X. Zhang, C. Xu, Z. Luo, Label propagated nonnegative matrix factorization for clustering, IEEE Transactions on Knowledge and Data Engineering 34(1) (2022) 340-351.
+\bibitem{Wang2022PNLP} C. Wang, J. Zhang, T. Wu, M. Zhang, G. Shi, Semi-supervised nonnegative matrix factorization with positive and negative label propagations, Applied Intelligence 52(9) (2022) 9739-9750.
+\bibitem{Li2025GOCNMF} J. Li, C. Li, Graph regularized one-hot-constrained nonnegative matrix factorization for data representation, Engineering Applications of Artificial Intelligence 156 (2025) 111224.
 \bibitem{Li2025OCSNMF} J. Li, C. Li, One-hot constrained symmetric nonnegative matrix factorization for image clustering, Pattern Recognition 162 (2025) 111427.
-\bibitem{Wang2015ConstraintNMF} D. Wang, X. Gao, X. Wang, Semi-supervised nonnegative matrix factorization via constraint propagation, IEEE Transactions on Cybernetics 46(1) (2016) 233--244.
+\bibitem{Wang2015ConstraintNMF} D. Wang, X. Gao, X. Wang, Semi-supervised nonnegative matrix factorization via constraint propagation, IEEE Transactions on Cybernetics 46(1) (2016) 233-244.
 \bibitem{Yin2023HSSNMF} J. Yin, S. Peng, Z. Yang, B. Chen, Z. Lin, Hypergraph based semi-supervised symmetric nonnegative matrix factorization for image clustering, Pattern Recognition 137 (2023) 109274.
 \bibitem{Yang2025SPNMF} X. Yang, T. Zhu, S. Peng, F. Nie, Z. Lin, Semi-supervised pivotal-aware nonnegative matrix factorization with label and pairwise constraint propagation for data clustering, Pattern Recognition 157 (2025) 110933.
 \bibitem{Mo2024PNLPSCNMF} Y. Mo, X. Li, J. Mei, Semi-supervised nonnegative matrix factorization with label propagation and constraint propagation, Engineering Applications of Artificial Intelligence 133 (2024) 108196.
-\bibitem{Peng2021CSNMF} S. Peng, W. Ser, B. Chen, Z. Lin, Robust semi-supervised nonnegative matrix factorization for image clustering, Pattern Recognition 111 (2021) 107683. \doi{10.1016/j.patcog.2020.107683}.
-\bibitem{Jing2025SNMFSP} W. Jing, L. Lu, W. Ou, Semi-supervised non-negative matrix factorization with structure preserving for image clustering, Neural Networks 187 (2025) 107340. \doi{10.1016/j.neunet.2025.107340}.
-\bibitem{Jing2026SNMFWLP} W. Jing, L. Lu, W. Ou, Semi-supervised non-negative matrix factorization with weighted label propagation for data representation, Signal Processing 241 (2026) 110407. \doi{10.1016/j.sigpro.2025.110407}.
-\bibitem{Li2026HLPNMF} J. Li, X. Zhou, X. Shen, C. Li, High-order label propagation-guided nonnegative matrix factorization for semi-supervised clustering, Pattern Recognition 180 (2026) 114657. \doi{10.1016/j.patcog.2026.114657}.
-\bibitem{Chavoshinejad2023S4NMF} J. Chavoshinejad, S. A. Seyedi, F. Akhlaghian Tab, N. Salahian, Self-supervised semi-supervised nonnegative matrix factorization for data clustering, Pattern Recognition 137 (2023) 109282. \doi{10.1016/j.patcog.2022.109282}.
-\bibitem{Zhu2003GaussianFields} X. Zhu, Z. Ghahramani, J. Lafferty, Semi-supervised learning using Gaussian fields and harmonic functions, in: Proceedings of the 20th International Conference on Machine Learning, 2003, pp. 912--919.
+\bibitem{Peng2021CSNMF} S. Peng, W. Ser, B. Chen, Z. Lin, Robust semi-supervised nonnegative matrix factorization for image clustering, Pattern Recognition 111 (2021) 107683.
+\bibitem{Jing2025SNMFSP} W. Jing, L. Lu, W. Ou, Semi-supervised non-negative matrix factorization with structure preserving for image clustering, Neural Networks 187 (2025) 107340.
+\bibitem{Jing2026SNMFWLP} W. Jing, L. Lu, W. Ou, Semi-supervised non-negative matrix factorization with weighted label propagation for data representation, Signal Processing 241 (2026) 110407.
+\bibitem{Li2026HLPNMF} J. Li, X. Zhou, X. Shen, C. Li, High-order label propagation-guided nonnegative matrix factorization for semi-supervised clustering, Pattern Recognition 180 (2026) 114657.
+\bibitem{Chavoshinejad2023S4NMF} J. Chavoshinejad, S. A. Seyedi, F. Akhlaghian Tab, N. Salahian, Self-supervised semi-supervised nonnegative matrix factorization for data clustering, Pattern Recognition 137 (2023) 109282.
+\bibitem{Zhu2003GaussianFields} X. Zhu, Z. Ghahramani, J. Lafferty, Semi-supervised learning using Gaussian fields and harmonic functions, in: Proceedings of the 20th International Conference on Machine Learning, 2003, pp. 912-919.
 \bibitem{Zhou2004LGC} D. Zhou, O. Bousquet, T. N. Lal, J. Weston, B. Sch\"olkopf, Learning with local and global consistency, in: Advances in Neural Information Processing Systems 16, 2004.
 \bibitem{Qiao2018GraphReview} L. Qiao, L. Zhang, S. Chen, D. Shen, Data-driven graph construction and graph learning: A review, Neurocomputing 312 (2018) 336--351.
-\bibitem{Gao2022HypergraphReview} Y. Gao, Z. Zhang, H. Lin, X. Zhao, S. Du, C. Zou, Hypergraph learning: Methods and practices, IEEE Transactions on Pattern Analysis and Machine Intelligence 44(5) (2022) 2548--2566.
-\bibitem{Song2023GSSLReview} Z. Song, X. Yang, Z. Xu, I. King, Graph-based semi-supervised learning: A comprehensive review, IEEE Transactions on Neural Networks and Learning Systems 34(11) (2023) 8174--8194.
-\bibitem{Abdolali2021SSMF} M. Abdolali, N. Gillis, Simplex-structured matrix factorization: Sparsity-based identifiability and provably correct algorithms, SIAM Journal on Mathematics of Data Science 3(2) (2021) 593--623. \doi{10.1137/20M1354982}.
-\bibitem{Abdolali2024DualSimplex} M. Abdolali, G. Barbarino, N. Gillis, Dual simplex volume maximization for simplex-structured matrix factorization, SIAM Journal on Imaging Sciences 17(4) (2024) 2362--2391. \doi{10.1137/24M1650600}.
-\bibitem{Xing2021GNMFLD} Z. Xing, Y. Ma, X. Yang, F. Nie, Graph regularized nonnegative matrix factorization with label discrimination for data clustering, Neurocomputing 440 (2021) 297--309.
-\bibitem{Kuhn1955Hungarian} H. W. Kuhn, The Hungarian method for the assignment problem, Naval Research Logistics Quarterly 2(1--2) (1955) 83--97.
-\bibitem{Vinh2010NMI} N. X. Vinh, J. Epps, J. Bailey, Information theoretic measures for clusterings comparison: Is a correction for chance necessary?, Journal of Machine Learning Research 11 (2010) 2837--2854.
-\bibitem{Wilcoxon1945} F. Wilcoxon, Individual comparisons by ranking methods, Biometrics Bulletin 1(6) (1945) 80--83.
+\bibitem{Gao2022HypergraphReview} Y. Gao, Z. Zhang, H. Lin, X. Zhao, S. Du, C. Zou, Hypergraph learning: Methods and practices, IEEE Transactions on Pattern Analysis and Machine Intelligence 44(5) (2022) 2548-2566.
+\bibitem{Song2023GSSLReview} Z. Song, X. Yang, Z. Xu, I. King, Graph-based semi-supervised learning: A comprehensive review, IEEE Transactions on Neural Networks and Learning Systems 34(11) (2023) 8174-8194.
+\bibitem{Abdolali2021SSMF} M. Abdolali, N. Gillis, Simplex-structured matrix factorization: Sparsity-based identifiability and provably correct algorithms, SIAM Journal on Mathematics of Data Science 3(2) (2021) 593-623.
+\bibitem{Abdolali2024DualSimplex} M. Abdolali, G. Barbarino, N. Gillis, Dual simplex volume maximization for simplex-structured matrix factorization, SIAM Journal on Imaging Sciences 17(4) (2024) 2362-2391.
+\bibitem{Xing2021GNMFLD} Z. Xing, Y. Ma, X. Yang, F. Nie, Graph regularized nonnegative matrix factorization with label discrimination for data clustering, Neurocomputing 440 (2021) 297-309.
+\bibitem{Kuhn1955Hungarian} H. W. Kuhn, The Hungarian method for the assignment problem, Naval Research Logistics Quarterly 2(1-2) (1955) 83-97.
+\bibitem{Vinh2010NMI} N. X. Vinh, J. Epps, J. Bailey, Information theoretic measures for clusterings comparison: Is a correction for chance necessary?, Journal of Machine Learning Research 11 (2010) 2837-2854.
+\bibitem{Wilcoxon1945} F. Wilcoxon, Individual comparisons by ranking methods, Biometrics Bulletin 1(6) (1945) 80-83.
 \end{thebibliography}
 \end{document}
